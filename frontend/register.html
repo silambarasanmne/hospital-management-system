@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient Registration | Hospital Management System</title>
+  <meta name="description" content="Register new OP patients and generate sequential tokens automatically.">
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased selection:bg-teal-500 selection:text-white">
+
+  <!-- Main Navigation Header -->
+  <header class="sticky top-0 z-50 glass-panel border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <!-- Logo / Brand -->
+        <div class="flex items-center gap-3">
+          <a href="index.html" class="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-teal-500/20">
+            <svg class="w-6 h-6 text-slate-950 font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path>
+            </svg>
+          </a>
+          <div>
+            <h1 class="text-lg font-bold bg-gradient-to-r from-white via-slate-200 to-teal-400 bg-clip-text text-transparent">
+              MediCare OP
+            </h1>
+            <p class="text-xs text-slate-400 font-medium">Hospital Management System</p>
+          </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="flex items-center gap-1 sm:gap-2">
+          <a href="index.html" id="nav-dashboard" class="px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+            Dashboard
+          </a>
+          <a href="register.html" id="nav-register" class="px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-lg bg-teal-500/10 text-teal-400 border border-teal-500/30 flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+            Patient Registration
+          </a>
+          <a href="patients.html" id="nav-records" class="px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            Patient Records
+          </a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-grow max-w-4xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    
+    <!-- Title Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-5">
+      <div>
+        <h2 class="text-2xl font-extrabold text-white flex items-center gap-2">
+          <svg class="w-6 h-6 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+          Outpatient Registration Form
+        </h2>
+        <p class="text-xs text-slate-400 mt-1">Fill in the required patient details to generate an OP Token automatically.</p>
+      </div>
+      <a href="patients.html" class="inline-flex items-center gap-1.5 text-xs font-semibold text-teal-400 hover:text-teal-300 self-start sm:self-auto">
+        <span>View Registered Patients</span>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+      </a>
+    </div>
+
+    <!-- Prominent Generated Token Card (Hidden by default until successful registration) -->
+    <div id="tokenDisplayCard" class="hidden glass-panel rounded-2xl border border-teal-500/40 p-6 sm:p-8 bg-gradient-to-br from-teal-950/80 via-slate-900 to-slate-950 shadow-2xl relative overflow-hidden">
+      <div class="absolute -right-8 -top-8 w-40 h-40 bg-teal-500/20 rounded-full blur-2xl pointer-events-none"></div>
+      
+      <div class="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
+        <div class="text-center md:text-left space-y-2">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+            Registration Successful
+          </span>
+          <h3 class="text-lg font-bold text-slate-100">Patient OP Token Generated</h3>
+          <p class="text-xs text-slate-300">
+            Patient: <span id="registeredPatientName" class="font-bold text-white">--</span> | 
+            Mobile: <span id="registeredMobile" class="font-mono text-cyan-300">--</span>
+          </p>
+          <p class="text-xs text-slate-400">Registered At: <span id="registeredDate">--</span></p>
+        </div>
+
+        <div class="flex flex-col items-center justify-center p-6 rounded-2xl token-badge-pulse min-w-[200px] border border-cyan-400/40">
+          <span class="text-xs font-bold uppercase tracking-wider text-teal-100">Your Token Number</span>
+          <span id="generatedToken" class="text-5xl font-black text-white font-mono-token mt-1 tracking-tight">15</span>
+          <span class="text-[10px] text-teal-200/80 mt-1">Present this token at OP counter</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Patient Registration Form Card -->
+    <div class="glass-panel rounded-2xl p-6 sm:p-8 border border-slate-800 shadow-xl">
+      <form id="registrationForm" novalidate class="space-y-6">
+        
+        <!-- Field 1: Patient Name -->
+        <div>
+          <label for="patient_name" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+            Patient Name <span class="text-red-400">*</span>
+          </label>
+          <div class="relative">
+            <input 
+              type="text" 
+              id="patient_name" 
+              name="patient_name" 
+              placeholder="e.g. John Doe"
+              class="form-input w-full px-4 py-3 rounded-xl text-sm placeholder-slate-500"
+              required
+            >
+          </div>
+          <div id="patient_name_error" class="field-error-msg hidden"></div>
+          <p class="text-[11px] text-slate-400 mt-1">Minimum 3 characters. Alphabets and spaces only.</p>
+        </div>
+
+        <!-- Row Grid: Age & Mobile -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          
+          <!-- Field 2: Age -->
+          <div>
+            <label for="age" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+              Age (Years) <span class="text-red-400">*</span>
+            </label>
+            <input 
+              type="number" 
+              id="age" 
+              name="age" 
+              min="0"
+              max="120"
+              placeholder="e.g. 35"
+              class="form-input w-full px-4 py-3 rounded-xl text-sm placeholder-slate-500"
+              required
+            >
+            <div id="age_error" class="field-error-msg hidden"></div>
+            <p class="text-[11px] text-slate-400 mt-1">Must be a valid number between 0 and 120.</p>
+          </div>
+
+          <!-- Field 3: Mobile Number -->
+          <div>
+            <label for="mobile" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+              Mobile Number <span class="text-red-400">*</span>
+            </label>
+            <input 
+              type="tel" 
+              id="mobile" 
+              name="mobile" 
+              maxlength="10"
+              placeholder="e.g. 9876543210"
+              class="form-input w-full px-4 py-3 rounded-xl text-sm placeholder-slate-500 font-mono"
+              required
+            >
+            <div id="mobile_error" class="field-error-msg hidden"></div>
+            <p class="text-[11px] text-slate-400 mt-1">Must be exactly 10 digits.</p>
+          </div>
+
+        </div>
+
+        <!-- Field 4: Issues / Symptoms -->
+        <div>
+          <label for="symptoms" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+            Issues / Symptoms <span class="text-red-400">*</span>
+          </label>
+          <textarea 
+            id="symptoms" 
+            name="symptoms" 
+            rows="3"
+            placeholder="Describe patient's medical issues, symptoms, or complaint..."
+            class="form-input w-full px-4 py-3 rounded-xl text-sm placeholder-slate-500 resize-none"
+            required
+          ></textarea>
+          <div id="symptoms_error" class="field-error-msg hidden"></div>
+          <p class="text-[11px] text-slate-400 mt-1">Minimum 5 characters required.</p>
+        </div>
+
+        <!-- Form Submit Action -->
+        <div class="pt-4 border-t border-slate-800 flex items-center justify-end gap-4">
+          <button 
+            type="reset" 
+            class="px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+          >
+            Clear Form
+          </button>
+          <button 
+            type="submit" 
+            id="submitBtn"
+            class="px-6 py-3 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 text-slate-950 font-bold text-sm hover:from-teal-400 hover:to-cyan-400 shadow-lg shadow-teal-500/25 transition-all transform hover:-translate-y-0.5 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <svg id="submitSpinner" class="w-4 h-4 animate-spin hidden" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span id="submitBtnText">Generate Patient Token</span>
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-800/80 py-6 text-center text-xs text-slate-500 mt-auto">
+    <p>Hospital Management System — Outpatient Registration & Token Records</p>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/register.js"></script>
+</body>
+</html>
