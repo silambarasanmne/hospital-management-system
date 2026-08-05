@@ -2,9 +2,12 @@
  * Hospital Management System - API Helper Module
  */
 
-const API_BASE_URL = window.location.origin.includes('5000') 
-  ? '/api' 
-  : 'http://localhost:5000/api';
+// Automatically detect API URL: Use relative '/api' when hosted on Render or custom domains, or fallback to localhost during local development
+const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const API_BASE_URL = (isLocalhost && window.location.port !== '5000')
+  ? 'http://localhost:5000/api'
+  : '/api';
+
 
 /**
  * Global Toast Notification Controller
