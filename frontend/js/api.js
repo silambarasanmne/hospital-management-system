@@ -2,12 +2,26 @@
  * Hospital Management System - API Helper Module
  */
 
-// Automatically detect API URL: Use relative '/api' when hosted on Render or custom domains, or fallback to localhost during local development
-const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-const API_BASE_URL = (isLocalhost && window.location.port !== '5000')
-  ? 'http://localhost:5000/api'
-  : '/api';
+// Production Render API URL (Fallback for GitHub Pages or static files)
+const RENDER_BACKEND_URL = 'https://hospital-management-system.onrender.com/api';
 
+/**
+ * Determine API Base URL intelligently:
+ * 1. If running on Express server (localhost:5000 or on Render site), use relative '/api'
+ * 2. If running via file:// or GitHub Pages, use live Render backend URL
+ */
+function getApiBaseUrl() {
+  const protocol = window.location.protocol;
+  const hostname = window.location.hostname;
+  
+  if (protocol === 'file:' || hostname.includes('github.io')) {
+    return RENDER_BACKEND_URL;
+  }
+  
+  return '/api';
+}
+
+const API_BASE_URL = getApiBaseUrl();
 
 /**
  * Global Toast Notification Controller
@@ -23,7 +37,7 @@ const Toast = {
     }
   },
 
-  show(message, type = 'success', duration = 4000) {
+  show(message, type = 'success', duration = 4500) {
     this.init();
     
     const toast = document.createElement('div');
@@ -53,31 +67,42 @@ const Toast = {
 };
 
 /**
- * Generic API Fetch Handler
+ * Generic API Fetch Handler with Auto-Retry for Render Free Tier Sleep
  */
-async function apiRequest(endpoint, options = {}) {
-  try {
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-      },
-      ...options
-    };
+async function apiRequest(endpoint, options = {}, retries = 2) {
+  const url = `${API_BASE_URL}${endpoint}`;
+  
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+          ...options.headers
+        },
+        ...options
+      };
 
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
-    const data = await response.json();
+      const response = await fetch(url, config);
+      const data = await response.json();
 
-    if (!response.ok) {
-      const errorMsg = data.message || 'An error occurred while communicating with the server.';
-      return { success: false, status: response.status, data, message: errorMsg, errors: data.errors };
+      if (!response.ok) {
+        const errorMsg = data.message || 'An error occurred while communicating with the server.';
+        return { success: false, status: response.status, data, message: errorMsg, errors: data.errors };
+      }
+
+      return { success: true, ...data };
+    } catch (error) {
+      console.warn(`API Request attempt ${attempt + 1} failed for ${url}:`, error);
+      
+      if (attempt < retries) {
+        Toast.show('Connecting to server... (Render instance may be waking up)', 'error', 3000);
+        // Wait 3 seconds before retrying to allow Render free instance to spin up
+        await new Promise(res => setTimeout(res, 3000));
+      } else {
+        Toast.error('Network connection error. If using Render, please wait 30 seconds for the free server to wake up and refresh.');
+        return { success: false, message: 'Network connection failed' };
+      }
     }
-
-    return { success: true, ...data };
-  } catch (error) {
-    console.error('API Request Error:', error);
-    Toast.error('Network error. Please check if the backend server is running.');
-    return { success: false, message: 'Network connection failed' };
   }
 }
 
